@@ -1,7 +1,14 @@
 import os
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, TimerAction
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    IncludeLaunchDescription,
+    TimerAction,
+)
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
@@ -9,6 +16,18 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     rviz_config = get_package_share_directory('robot_visualization') + '/rviz/pointfoot.rviz'
+
+    rviz_arg = DeclareLaunchArgument(
+        'rviz',
+        default_value='false',
+        description='Launch RViz2',
+    )
+
+    controller_delay_arg = DeclareLaunchArgument(
+        'controller_delay',
+        default_value='10.0',
+        description='Seconds to wait before loading joint_state_broadcaster',
+    )
 
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -30,12 +49,12 @@ def generate_launch_description():
             executable='rviz2',
             arguments=['-d', rviz_config],
             output='screen',
+            condition=IfCondition(LaunchConfiguration('rviz')),
         )]
     )
 
-    # Load joint_state_broadcaster after sim is fully up (WheelfootController starts at ~6s)
     load_controllers = TimerAction(
-        period=15.0,
+        period=LaunchConfiguration('controller_delay'),
         actions=[ExecuteProcess(
             cmd=['bash', '-c',
                  'ros2 param set /controller_manager joint_state_broadcaster.type '
@@ -46,6 +65,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        rviz_arg,
+        controller_delay_arg,
         sim,
         gzclient,
         rviz,
