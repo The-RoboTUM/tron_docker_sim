@@ -1,7 +1,8 @@
 #!/bin/bash
 
-SCRIPT_DIR = "$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$SCRIPT_DIR/limx_ws"
+cd  "$SCRIPT_DIR/limx_ws"
 
 git clone https://github.com/limxdynamics/limxsdk-lowlevel.git
 git clone https://github.com/limxdynamics/robot-description.git
