@@ -1,5 +1,5 @@
-.vscode
 ros2_ws/src/*
 !ros2_ws/src/sim_bringup
-__pycache__/
-*.pyc
+.git/
+.vscode/
+callibration/

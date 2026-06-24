@@ -15,5 +15,9 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    entry_points={},
+    entry_points={
+        'console_scripts': [
+            'odom_tf_broadcaster = sim_bringup.odom_tf_broadcaster:main',
+        ],
+    },
 )

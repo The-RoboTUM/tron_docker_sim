@@ -23,17 +23,20 @@ def generate_launch_description():
         description='Launch RViz2',
     )
 
-    controller_delay_arg = DeclareLaunchArgument(
-        'controller_delay',
-        default_value='10.0',
-        description='Seconds to wait before loading joint_state_broadcaster',
+    stand_arg = DeclareLaunchArgument(
+        'stand',
+        default_value='false',
+        description='If true, the robot stands automatically on start. If false, it waits for the /start_stand service.',
     )
 
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             FindPackageShare('robot_hw'), '/launch/pointfoot_hw_sim.launch.py'
         ]),
-        launch_arguments={'gui': 'false'}.items(),
+        launch_arguments={
+            'gui': 'false',
+            'stand': LaunchConfiguration('stand'),
+        }.items(),
     )
 
     # gzclient launched without the EOL plugin that causes crashes
@@ -53,22 +56,25 @@ def generate_launch_description():
         )]
     )
 
-    load_controllers = TimerAction(
-        period=LaunchConfiguration('controller_delay'),
-        actions=[ExecuteProcess(
-            cmd=['bash', '-c',
-                 'ros2 param set /controller_manager joint_state_broadcaster.type '
-                 'joint_state_broadcaster/JointStateBroadcaster && '
-                 'ros2 control load_controller --set-state active joint_state_broadcaster'],
-            output='screen',
-        )]
+    odom_tf_broadcaster = Node(
+        package='sim_bringup',
+        executable='odom_tf_broadcaster',
+        output='screen',
+    )
+
+    load_controllers = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+        output='screen',
     )
 
     return LaunchDescription([
         rviz_arg,
-        controller_delay_arg,
+        stand_arg,
         sim,
         gzclient,
         rviz,
+        odom_tf_broadcaster,
         load_controllers,
     ])
