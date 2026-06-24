@@ -30,13 +30,15 @@ The process might take a few minutes, but it only needs to be done once (unless 
 
 ### Step 2: Make the scripts executable
 
-The bash scripts included in this repo make the process of running an instance of the container easier. Make sure that they are executable first:
+The bash scripts included in this repo make the process of running an instance of the container easier. They should be executable already, but if they don't work do (e.g. for run_gpu.sh):
 
 ```[bash]
-chmod +x run_gpu.sh && chmod +x run_nogpu.sh
+chmod +x run_gpu.sh
 ```
 
-### Step 3: Run the container
+## Step 3: Clone the limx sources
+
+### Step 4: Run the container
 
 There are two ways to run the container: with and without GPU. Running it with GPU (if available in host machine) makes the simulation go considerably smoother. However, this requires the user to have installed on the host machine the container toolkit (assuming Nvidia GPU).
 
@@ -59,9 +61,9 @@ or
 
 The terminal should now be inside of the container, and we are ready to launch the simulation.
 
-### Step 4: Running the simulation
+### Step 5: Running the simulation
 
-The included ROS2 Package `sim_bringup` includes a launch file which lets us easily launch the simulation. Because of some Docker shenanigans, a gzclient needs to be launched a couple of seconds after Gazebo to get the GUI. Same goes for the joint_state_broadcaster, which publishes /tf. All the ROS2 packages are already sourced, so don't worry about doing so.
+The included ROS2 Package `sim_bringup` includes a launch file which lets us easily launch the simulation. Because of some Docker shenanigans, a gzclient needs to be launched a couple of seconds after Gazebo to get the GUI. All the ROS2 packages are already sourced, so don't worry about doing so.
 
 ```[bash]
 ros2 launch sim_bringup sim.launch.py
@@ -71,6 +73,20 @@ The simulation should start and you should get a window with Gazebo and the robo
 
 ```[bash]
 ros2 launch sim_bringup sim.launch.py rviz:=true
+```
+
+## Step 6: Making the robot stand up
+
+By default, the robot will spawn crouching down in a newly added `:IDLE:`state. In order to get it to stand up, the `/start_stand` service needs to be called on a new terminal on the same docker instance (see next section)
+
+```[bash]
+ros2 service call /start_stand std_srvs/srv/Trigger {}
+```
+
+Alternativelly, an additional argument can be added to the launch file to make it so the robot stands on its own as soon as the simulation begins:
+
+```[bash]
+ros2 launch sim_bringup sim.launch.py stand:=true
 ```
 
 ### Executing additional instances of the same container
