@@ -36,7 +36,26 @@ The bash scripts included in this repo make the process of running an instance o
 chmod +x run_gpu.sh
 ```
 
-## Step 3: Clone the limx sources
+### Step 3: Clone the limx sources
+
+This step is not a mandatory one, but it is a must if the user plans to make modifications to the base limx packages. When building the Docker image, the latest versions of a fork of the limx packages will be installed. The user can additionally clone them on their local, and any changes made to the local files will be reflected on the simulation ran from within the Docker.
+
+(optional but recommended) Clone the RoboTUM forks of the limx sources on the `/ros2_ws/src` directory:
+
+```[bash]
+cd src && \
+git clone https://github.com/limxdynamics/limxsdk-lowlevel.git && \
+git clone -b feature/humble git@github.com:The-RoboTUM/tron1-gazebo-ros2.git && \
+git clone git@github.com:The-RoboTUM/robot-description.git && \
+git clone https://github.com/limxdynamics/robot-visualization.git && \
+git clone -b feature/humble git@github.com:The-RoboTUM/tron1-rl-deploy-ros2.git
+```
+
+If you haven't done ssh setup or you do not have the necessary permissions to make changes to the remote, you can replace the clone of the `robot-description`, `tron1-rl-deploy-ros2`, and `tron1-gazebo-ros2` repositories for their https versions. However, consider that you won't be able to push any changes this way. If you wish to change the remote with:
+
+```[bash]
+git remote set-url origin <https-or-ssh-url>
+```
 
 ### Step 4: Run the container
 
