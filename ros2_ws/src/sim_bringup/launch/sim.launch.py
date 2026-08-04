@@ -29,6 +29,12 @@ def generate_launch_description():
         description='If true, the robot stands automatically on start. If false, it waits for the /start_stand service.',
     )
 
+    lidar_viz_arg = DeclareLaunchArgument(
+        'lidar_viz',
+        default_value='false',
+        description='Enable LiDAR ray visualization in Gazebo.',
+    )
+
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             FindPackageShare('robot_hw'), '/launch/pointfoot_hw_sim.launch.py'
@@ -36,6 +42,7 @@ def generate_launch_description():
         launch_arguments={
             'gui': 'false',
             'stand': LaunchConfiguration('stand'),
+            'lidar_viz': LaunchConfiguration('lidar_viz'),
         }.items(),
     )
 
@@ -72,6 +79,7 @@ def generate_launch_description():
     return LaunchDescription([
         rviz_arg,
         stand_arg,
+        lidar_viz_arg,
         sim,
         gzclient,
         rviz,
