@@ -71,6 +71,12 @@ COPY ros2_ws/src/sim_bringup/ /ros2_ws/src/sim_bringup/
 # Compile the whole workspace
 RUN /bin/bash -c "cd /ros2_ws && source /opt/ros/humble/setup.bash && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
 
+# Amazon Warehouse package
+RUN mkdir -p /opt/warehouse_ws/src && \
+    cd /opt/warehouse_ws/src && \
+    git clone -b ros2 https://github.com/aws-robotics/aws-robomaker-small-warehouse-world.git && \
+    /bin/bash -c "cd /opt/warehouse_ws && source /opt/ros/humble/setup.bash && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
+
 # Fix mesh URIs: add file:// prefix so both Gazebo and RViz2 can load them
 RUN find /ros2_ws/install/robot_description -name "*.xacro" | \
     xargs sed -i 's|<mesh filename="$(find robot_description)|<mesh filename="file://$(find robot_description)|g'
@@ -81,16 +87,16 @@ RUN find /ros2_ws/install/robot_visualization -name "*.launch.py" | \
 
 # Source ROS2 on every shell
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+RUN echo "[ -f /opt/warehouse_ws/install/setup.bash ] && source /opt/warehouse_ws/install/setup.bash" >> /root/.bashrc
 RUN echo "[ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash" >> /root/.bashrc
+RUN echo "[ -f /usr/share/gazebo-11/setup.bash ] && source /usr/share/gazebo-11/setup.bash" >> /root/.bashrc
+RUN echo "export GAZEBO_RESOURCE_PATH=\$GAZEBO_RESOURCE_PATH:/opt/warehouse_ws/install/aws_robomaker_small_warehouse_world/share/aws_robomaker_small_warehouse_world" >> /root/.bashrc
 
 # Select Robot Type and RL Type
 ENV ROBOT_TYPE=WF_TRON1A
 ENV RL_TYPE=isaacgym
 RUN echo "export ROBOT_TYPE=WF_TRON1A" >> /root/.bashrc
 RUN echo "export RL_TYPE=isaacgym" >> /root/.bashrc
-
-# Get more Gazebo assets (this is 1GB! If rebuilding often, better to install it on host and do a volume mount instead!)
-RUN git clone https://github.com/osrf/gazebo_models ~/.gazebo/models
 
 # X11 display for GUI apps (Gazebo, RViz)
 ENV DISPLAY=:0

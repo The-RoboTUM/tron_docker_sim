@@ -35,11 +35,12 @@ def generate_launch_description():
         description='Enable LiDAR ray visualization in Gazebo.',
     )
 
-    # Use the empty world
+    # Use the warehouse world file
     world_file = os.path.join(
-        FindPackageShare('pointfoot_gazebo').find('pointfoot_gazebo'),
+        FindPackageShare('aws_robomaker_small_warehouse_world').find('aws_robomaker_small_warehouse_world'),
         'worlds',
-        'empty_world.world'
+        'small_warehouse',
+        'small_warehouse.world'
     )
 
     sim = IncludeLaunchDescription(
