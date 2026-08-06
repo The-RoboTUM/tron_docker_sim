@@ -20,7 +20,7 @@ On a terminal standing on the cloned repository
 cd ~/tron_docker_sim # or wherever you cloned it
 ```
 
-run the following command to build the image (will give it the name `ros2_humble_sim`:
+run the following command to build the image (will give it the name `ros2_humble_sim`):
 
 ```[bash]
 docker build -t ros2_humble_sim .
@@ -93,6 +93,18 @@ The simulation should start and you should get a window with Gazebo and the robo
 ```[bash]
 ros2 launch sim_bringup sim.launch.py rviz:=true
 ```
+
+For a more interesting simulation environment, you can run the following command to spawn the robot in the `aws warehouse`:
+
+```[bash]
+ros2 launch sim_bringup warehouse.launch.py
+```
+
+<div style="display:flex; justify-content:center; gap:12px;">
+  <img src="media/tron_in_warehouse.png" style="width:30.33%; height:250px; object-fit:cover;">
+  <img src="media/rviz_gazebo.png" style="width:30.33%; height:250px; object-fit:cover;">
+  <img src="media/360scan.png" style="width:30.33%; height:250px; object-fit:cover;">
+</div>
 
 ## Step 6: Making the robot stand up
 
