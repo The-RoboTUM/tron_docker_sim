@@ -15,7 +15,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    rviz_config = get_package_share_directory('robot_visualization') + '/rviz/pointfoot.rviz'
+    rviz_config = get_package_share_directory('robot_visualization') + '/rviz/warehouse.rviz'
 
     rviz_arg = DeclareLaunchArgument(
         'rviz',
